@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useGlobalContext } from "./context/GlobalContext";
 import { getAllVehicles } from "./service/vehicles";
+import BASE_URL from "../../pallaku_frontend/src/Hooks/apiUrl";
 
 export default function EditVehicles() {
   const [editData, setEditData] = useState({});
@@ -104,7 +105,7 @@ export default function EditVehicles() {
       }
 
       const res = await axios.put(
-        `http://localhost:5000/api/vehicles/update-vehicle/${id}`,
+        `https://pallaku-backend.onrender.com/api/vehicles/update-vehicle/${id}`,
         formData,
         {
           headers: {
@@ -132,7 +133,7 @@ export default function EditVehicles() {
       const confirm = window.confirm("Are you sure you want to delete this vehicle?");
       if (!confirm) return;
 
-      await axios.delete(`http://localhost:5000/api/vehicles/delete-vehicle/${id}`);
+      await axios.delete(`https://pallaku-backend.onrender.com/api/vehicles/delete-vehicle/${id}`);
       setVehicleDetails((prev) => prev.filter((v) => v._id !== id));
     } catch (err) {
       console.error(err);
@@ -147,7 +148,7 @@ export default function EditVehicles() {
         <div key={v._id} className="border p-6 rounded-lg shadow-lg space-y-6 bg-white">
           <div className="flex flex-col md:flex-row items-start md:space-x-6 space-y-4 md:space-y-0">
             <img
-              src={`http://localhost:5000/image/${v.img}`}
+              src={`https://pallaku-backend.onrender.com/image/${v.img}`}
               alt="vehicle"
               className="w-full md:w-40 h-28 object-cover rounded"
             />

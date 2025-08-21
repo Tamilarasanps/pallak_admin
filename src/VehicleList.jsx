@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAllVehicles } from "./service/vehicles";
+import BASE_URL from "../../pallaku_frontend/src/Hooks/apiUrl";
 
 const VehicleList = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -33,7 +34,7 @@ const VehicleList = () => {
               <p><strong>Options:</strong> {v.options.join(", ")}</p>
               {v.img && (
                 <img
-                  src={`http://localhost:5000/uploads/${v.img}`} // Adjust if stored differently
+                  src={`https://pallaku-backend.onrender.com/uploads/${v.img}`} // Adjust if stored differently
                   alt={v.type}
                   className="mt-2 w-full h-40 object-cover"
                 />
