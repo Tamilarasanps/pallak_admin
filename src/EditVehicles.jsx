@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useGlobalContext } from "./context/GlobalContext";
 import { getAllVehicles } from "./service/vehicles";
-import BASE_URL from "../../pallaku_frontend/src/Hooks/apiUrl";
 
 export default function EditVehicles() {
   const [editData, setEditData] = useState({});
