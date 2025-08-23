@@ -12,14 +12,13 @@ export default function EditVehicles() {
     const getData = async () => {
       try {
         const response = await getAllVehicles();
-        setVehicleDetails(response)
+        setVehicleDetails(response);
       } catch (error) {
         console.error("Failed to fetch trips:", error);
       }
     };
     getData();
   }, []);
-
 
   useEffect(() => {
     const initial = {};
@@ -104,6 +103,7 @@ export default function EditVehicles() {
       }
 
       const res = await axios.put(
+        // `https://http://localhost:5000/api/vehicles/update-vehicle/${id}`,
         `https://pallaku-backend.onrender.com/api/vehicles/update-vehicle/${id}`,
         formData,
         {
@@ -115,9 +115,7 @@ export default function EditVehicles() {
 
       // Refresh state with updated vehicle
       setVehicleDetails((prev) =>
-        prev.map((veh) =>
-          veh._id === id ? { ...veh, ...res?.data } : veh
-        )
+        prev.map((veh) => (veh._id === id ? { ...veh, ...res?.data } : veh))
       );
 
       alert("Vehicle updated!");
@@ -129,10 +127,17 @@ export default function EditVehicles() {
 
   const handleDeleteVehicle = async (id) => {
     try {
-      const confirm = window.confirm("Are you sure you want to delete this vehicle?");
+      const confirm = window.confirm(
+        "Are you sure you want to delete this vehicle?"
+      );
       if (!confirm) return;
 
-      await axios.delete(`https://pallaku-backend.onrender.com/api/vehicles/delete-vehicle/${id}`);
+      //       await axios.delete(
+      //         `http://localhost:5000/api/vehicles/delete-vehicle/${id}`
+      // );
+      await axios.delete(
+        `https://pallaku-backend.onrender.com/api/vehicles/delete-vehicle/${id}`
+      );
       setVehicleDetails((prev) => prev.filter((v) => v._id !== id));
     } catch (err) {
       console.error(err);
@@ -140,14 +145,17 @@ export default function EditVehicles() {
     }
   };
 
-
   return (
     <div className="lg:p-6 space-y-6">
       {vehicleDetails?.map((v) => (
-        <div key={v._id} className="border p-6 rounded-lg shadow-lg space-y-6 bg-white">
+        <div
+          key={v._id}
+          className="border p-6 rounded-lg shadow-lg space-y-6 bg-white"
+        >
           <div className="flex flex-col md:flex-row items-start md:space-x-6 space-y-4 md:space-y-0">
             <img
               src={`https://pallaku-backend.onrender.com/image/${v.img}`}
+              // src={`http://localhost:5000/image/${v.img}`}
               alt="vehicle"
               className="w-full md:w-40 h-28 object-cover rounded"
             />
@@ -162,7 +170,9 @@ export default function EditVehicles() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Capacity</label>
+                <label className="block text-sm font-semibold mb-1">
+                  Capacity
+                </label>
                 <input
                   name="capacity"
                   value={editData[v._id]?.capacity || ""}
@@ -171,7 +181,9 @@ export default function EditVehicles() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">One Way Price</label>
+                <label className="block text-sm font-semibold mb-1">
+                  One Way Price
+                </label>
                 <input
                   name="oneWayPrice"
                   type="number"
@@ -181,7 +193,9 @@ export default function EditVehicles() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">Round Trip Price</label>
+                <label className="block text-sm font-semibold mb-1">
+                  Round Trip Price
+                </label>
                 <input
                   name="roundTripPrice"
                   type="number"
@@ -191,7 +205,9 @@ export default function EditVehicles() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-semibold mb-1">Change Image</label>
+                <label className="block text-sm font-semibold mb-1">
+                  Change Image
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -249,5 +265,4 @@ export default function EditVehicles() {
       ))}
     </div>
   );
-
 }

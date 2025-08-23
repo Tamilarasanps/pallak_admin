@@ -27,13 +27,24 @@ const VehicleList = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {vehicles.map((v) => (
             <div key={v._id} className="border rounded p-3 shadow bg-white">
-              <p><strong>Type:</strong> {v.type}</p>
-              <p><strong>Capacity:</strong> {v.capacity}</p>
-              <p><strong>One Way:</strong> ₹{v.oneWayPrice}</p>
-              <p><strong>Round Trip:</strong> ₹{v.roundTripPrice}</p>
-              <p><strong>Options:</strong> {v.options.join(", ")}</p>
+              <p>
+                <strong>Type:</strong> {v.type}
+              </p>
+              <p>
+                <strong>Capacity:</strong> {v.capacity}
+              </p>
+              <p>
+                <strong>One Way:</strong> ₹{v.oneWayPrice}
+              </p>
+              <p>
+                <strong>Round Trip:</strong> ₹{v.roundTripPrice}
+              </p>
+              <p>
+                <strong>Options:</strong> {v.options.join(", ")}
+              </p>
               {v.img && (
                 <img
+                  // src={`http://localhost:5000/uploads/${v.img}`} // Adjust if stored differently
                   src={`https://pallaku-backend.onrender.com/uploads/${v.img}`} // Adjust if stored differently
                   alt={v.type}
                   className="mt-2 w-full h-40 object-cover"
