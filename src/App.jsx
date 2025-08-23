@@ -4,15 +4,19 @@ import Layout from "./Layout";
 import AdminPage from "./Admin";
 import EditVehicles from "./EditVehicles";
 import CreateVehicleForm from "./CreateVehicles";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<AdminPage />} />
-        <Route path="/edit" element={<EditVehicles />} />
-        <Route path="/create" element={<CreateVehicleForm />} />
-      </Route>
-    </Routes>
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<AdminPage />} />
+          <Route path="/edit" element={<EditVehicles />} />
+          <Route path="/create" element={<CreateVehicleForm />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
