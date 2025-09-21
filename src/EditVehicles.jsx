@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useGlobalContext } from "./context/GlobalContext";
 import { getAllVehicles } from "./service/vehicles";
+import toast from "react-hot-toast";
 
 export default function EditVehicles() {
   const [editData, setEditData] = useState({});
@@ -28,6 +29,9 @@ export default function EditVehicles() {
         capacity: v.capacity,
         oneWayPrice: v.oneWayPrice,
         roundTripPrice: v.roundTripPrice,
+        oneWayTripMinKm: v.oneWayTripMinKm,
+        roundTripMinKm: v.roundTripMinKm,
+        driverAllowance: v.driverAllowance,
         options: [...v.options],
       };
     });
@@ -96,6 +100,9 @@ export default function EditVehicles() {
       formData.append("capacity", updated.capacity);
       formData.append("oneWayPrice", updated.oneWayPrice);
       formData.append("roundTripPrice", updated.roundTripPrice);
+      formData.append("oneWayTripMinKm", updated.oneWayTripMinKm);
+      formData.append("roundTripMinKm", updated.roundTripMinKm);
+      formData.append("driverAllowance", updated.driverAllowance);
       formData.append("options", JSON.stringify(updated.options));
 
       if (imageFiles[id]) {
@@ -103,7 +110,7 @@ export default function EditVehicles() {
       }
 
       const res = await axios.put(
-        // `https://http://localhost:5000/api/vehicles/update-vehicle/${id}`,
+        // `http://localhost:5000/api/vehicles/update-vehicle/${id}`,
         `https://pallaku-backend.onrender.com/api/vehicles/update-vehicle/${id}`,
         formData,
         {
@@ -118,10 +125,10 @@ export default function EditVehicles() {
         prev.map((veh) => (veh._id === id ? { ...veh, ...res?.data } : veh))
       );
 
-      alert("Vehicle updated!");
+      toast.success("Vehicle updated!", { position: "top-center" });
     } catch (err) {
       console.error(err);
-      alert("Update failed");
+      toast.error("Update failed", { position: "top-center" });
     }
   };
 
@@ -141,10 +148,11 @@ export default function EditVehicles() {
       setVehicleDetails((prev) => prev.filter((v) => v._id !== id));
     } catch (err) {
       console.error(err);
-      alert("Delete failed");
+      toast.error("Delete failed", { position: "top-center" });
     }
   };
-
+  console.log("veh :", vehicleDetails);
+  console.log("edi :", editData);
   return (
     <div className="lg:p-6 space-y-6">
       {vehicleDetails?.map((v) => (
@@ -182,7 +190,7 @@ export default function EditVehicles() {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">
-                  One Way Price
+                  One Way Trip Price
                 </label>
                 <input
                   name="oneWayPrice"
@@ -200,6 +208,42 @@ export default function EditVehicles() {
                   name="roundTripPrice"
                   type="number"
                   value={editData[v._id]?.roundTripPrice || ""}
+                  onChange={(e) => handleChange(e, v._id)}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1">
+                  One Way Trip Min Km
+                </label>
+                <input
+                  name="oneWayTripMinKm"
+                  type="number"
+                  value={editData[v._id]?.oneWayTripMinKm || ""}
+                  onChange={(e) => handleChange(e, v._id)}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1">
+                  Round Trip Min Km
+                </label>
+                <input
+                  name="roundTripMinKm"
+                  type="number"
+                  value={editData[v._id]?.roundTripMinKm || ""}
+                  onChange={(e) => handleChange(e, v._id)}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1">
+                  Driver Allowance (per day)
+                </label>
+                <input
+                  name="driverAllowance"
+                  type="number"
+                  value={editData[v._id]?.driverAllowance || ""}
                   onChange={(e) => handleChange(e, v._id)}
                   className="border p-2 rounded w-full"
                 />
