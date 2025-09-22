@@ -3,6 +3,7 @@ import axios from "axios";
 
 export const fetchAllBookings = async () => {
   const token = localStorage.getItem("token");
+  // console.log('token :',token)
   try {
     // const response = await axios.get("http://localhost:5000/api/bookings", {
     const response = await axios.get(

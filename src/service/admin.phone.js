@@ -10,7 +10,7 @@ export const updateAdminMobile = async (mobileNumber) => {
         mobile: mobileNumber,
       }
     );
-    console.log(response);
+    // console.log(response);
     return response.data;
   } catch (error) {
     console.error("Failed to update admin mobile:", error);

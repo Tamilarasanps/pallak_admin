@@ -6,7 +6,6 @@ import { toast } from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 
-
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -37,9 +36,8 @@ export default function Login() {
       // console.log(response.data);
 
       // Navigate to admin page
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
+
+      navigate("/");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed!");
       console.log(err);

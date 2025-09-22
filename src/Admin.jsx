@@ -6,6 +6,7 @@ import { getAllVehicles } from "./service/vehicles";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EditTripPopUp from "./EditTripPopUp";
+import axios from "axios";
 
 export default function AdminPage() {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -85,6 +86,23 @@ export default function AdminPage() {
     setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleUpdateMobile = async () => {
+    try {
+      const res = await axios.put(
+        "https://pallaku-backend.onrender.com/api/admin/mobile",
+        // "http://localhost:5000/api/admin/mobile",
+        { mobile: mobileNumber }, // request body
+        { headers: { "Content-Type": "application/json" } } // headers
+      );
+
+      console.log("Response:", res.data);
+      alert("Mobile number updated!");
+    } catch (error) {
+      console.error("Error updating mobile:", error);
+      alert("Update failed");
+    }
+  };
+
   return (
     <div className="w-full h-full bg-indigo-50 space-y-6 py-4 p-6 md:p-12">
       {/* Header */}
@@ -99,6 +117,7 @@ export default function AdminPage() {
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
             className="px-4 py-2 w-32 lg:w-48 rounded-md border border-gray-300 focus:ring-2 focus:ring-indigo-400"
+            onClick={handleUpdateMobile}
           />
           <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all">
             Update
@@ -246,50 +265,53 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((trip, index) => (
-              <tr
-                key={trip._id}
-                className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-              >
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  <button
-                    onClick={() => setEditingTrip(trip)}
-                    className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
-                  {trip?.bookingId || "-"}
-                </td>
-                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
-                  {trip.date?.slice(0, 10) || "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.from || "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.to || "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.tripType || "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.vehicle?.type || "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.totalFare != null
-                    ? `₹ ${trip.totalFare.toFixed(2)}`
-                    : "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.mobile || "-"}
-                </td>
-                <td className="px-4 py-3 whitespace-normal break-words">
-                  {trip.name || "-"}
-                </td>
-              </tr>
-            ))}
+            {filteredData
+              .slice()
+              .reverse()
+              .map((trip, index) => (
+                <tr
+                  key={trip._id}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                >
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    <button
+                      onClick={() => setEditingTrip(trip)}
+                      className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
+                    {trip?.bookingId || "-"}
+                  </td>
+                  <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
+                    {trip.date?.slice(0, 10) || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.from || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.to || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.tripType || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.vehicle?.type || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.totalFare != null
+                      ? `₹ ${trip.totalFare.toFixed(2)}`
+                      : "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.mobile || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    {trip.name || "-"}
+                  </td>
+                </tr>
+              ))}
             {filteredData.length === 0 && (
               <tr>
                 <td colSpan="10" className="text-center py-6 text-gray-500">
