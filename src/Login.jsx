@@ -10,41 +10,42 @@ export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate =useNavigate();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const response = await axios.post(
-      `https://pallaku-backend.onrender.com/api/adminLogin`,
-      // `http://localhost:5000/api/adminLogin`,
-      form,
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true, // ← include cookies
-      },
-    );
-     localStorage.setItem("token", response.data.token);
-    console.log(response)
-    console.log(response.data.token)
-    // console.log(response)
-    toast.success(response.data.message || "Login successful!");
-    // console.log(response.data);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `https://pallaku-backend.onrender.com/api/adminLogin`,
+        // `http://localhost:5000/api/adminLogin`,
+        form,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // ← include cookies
+        }
+      );
+      localStorage.setItem("token", response.data.token);
+      console.log(response);
+      console.log(response.data.token);
+      // console.log(response)
+      toast.success(response.data.message || "Login successful!");
+      // console.log(response.data);
 
-    // Navigate to admin page
-    navigate("/"); // if using useNavigate
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Login failed!");
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      // Navigate to admin page
+      setTimeout(() => {
+        navigate("/");
+      }, 200);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed!");
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-white to-indigo-50 px-6">
@@ -108,7 +109,11 @@ const handleSubmit = async (e) => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-2.5 p-1 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -127,7 +132,8 @@ const handleSubmit = async (e) => {
 
         {/* Footer */}
         <p className="mt-6 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Admin Dashboard. All rights reserved.
+          &copy; {new Date().getFullYear()} Admin Dashboard. All rights
+          reserved.
         </p>
       </motion.div>
     </div>
