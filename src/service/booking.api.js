@@ -5,7 +5,7 @@ export const fetchAllBookings = async () => {
   try {
     // const response = await axios.get("http://localhost:5000/api/bookings", {
     const response = await axios.get("https://pallaku-backend.onrender.com/api/bookings", {
-      headers: { "Content-Type": "application/json", },
+      headers: { "Content-Type": "application/json","Authorization": `Bearer ${localStorage.getItem("token")}` },
       withCredentials: true, // ← include cookies
     }); 
     return response.data;

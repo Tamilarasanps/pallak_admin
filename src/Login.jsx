@@ -38,7 +38,7 @@ export default function Login() {
 
       // Navigate to admin page
       setTimeout(() => {
-        navigate("/home");
+        navigate("/");
       }, 3000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed!");
