@@ -6,7 +6,6 @@ import { toast } from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 
-import AxiosInstance from "./axiosInstance";
 
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
