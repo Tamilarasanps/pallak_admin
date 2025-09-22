@@ -1,6 +1,6 @@
 // In HomePage.jsx or any protected page
 import { useEffect } from "react";
-import AxiosInstance from "./axiosInstance";
+import AxiosInstance from "./AxiosInstance";
 
 const HomePage = () => {
   useEffect(() => {
