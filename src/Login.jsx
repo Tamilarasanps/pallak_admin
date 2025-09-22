@@ -26,8 +26,11 @@ const handleSubmit = async (e) => {
       {
         headers: { "Content-Type": "application/json" },
         withCredentials: true, // ← include cookies
-      }
+      },
     );
+     localStorage.setItem("token", response.data.token);
+    console.log(response)
+    console.log(response.data.token)
     // console.log(response)
     toast.success(response.data.message || "Login successful!");
     // console.log(response.data);
