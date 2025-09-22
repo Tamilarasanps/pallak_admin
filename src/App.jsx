@@ -6,7 +6,6 @@ import EditVehicles from "./EditVehicles";
 import CreateVehicleForm from "./CreateVehicles";
 import { Toaster } from "react-hot-toast";
 import Login from "./Login";
-import HomePage from "./HomePage";
 
 export default function App() {
   return (
@@ -16,7 +15,6 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
           <Route path="/" element={<AdminPage />} />
-          <Route path="/home" element={<HomePage />} />
           <Route path="/edit" element={<EditVehicles />} />
           <Route path="/create" element={<CreateVehicleForm />} />
         </Route>
