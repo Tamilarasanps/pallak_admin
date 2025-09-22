@@ -117,9 +117,9 @@ export default function AdminPage() {
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
             className="px-4 py-2 w-32 lg:w-48 rounded-md border border-gray-300 focus:ring-2 focus:ring-indigo-400"
-            onClick={handleUpdateMobile}
+            
           />
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all">
+          <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all" onClick={handleUpdateMobile}>
             Update
           </button>
         </div>
