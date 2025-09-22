@@ -21,14 +21,16 @@ const handleSubmit = async (e) => {
   try {
     const response = await axios.post(
       `https://pallaku-backend.onrender.com/api/adminLogin`,
+      // `http://localhost:5000/api/adminLogin`,
       form,
       {
         headers: { "Content-Type": "application/json" },
         withCredentials: true, // ← include cookies
       }
     );
+    // console.log(response)
     toast.success(response.data.message || "Login successful!");
-    console.log(response.data);
+    // console.log(response.data);
 
     // Navigate to admin page
     navigate("/"); // if using useNavigate
