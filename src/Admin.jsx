@@ -15,7 +15,7 @@ export default function AdminPage() {
   const { setVehicleDetails, vehicleDetails } = useGlobalContext();
   const [showPickup, setShowPickup] = useState(false);
   const [showDrop, setShowDrop] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     date: "",
     tripType: "",
@@ -58,18 +58,24 @@ export default function AdminPage() {
     getData();
   }, []);
 
-
   const applyFilters = () => {
     let filtered = tripsData.filter((trip) => {
       return (
         (!filters.bookingId ||
-          trip.bookingId?.toLowerCase().includes(filters.bookingId.toLowerCase())) &&
+          trip.bookingId
+            ?.toLowerCase()
+            .includes(filters.bookingId.toLowerCase())) &&
         (!filters.date || trip.date?.includes(filters.date)) &&
         (!filters.tripType ||
-          trip.tripType?.toLowerCase().includes(filters.tripType.toLowerCase())) &&
-        (!filters.name || trip.name?.toLowerCase().includes(filters.name.toLowerCase())) &&
-        (!filters.from || trip.from?.toLowerCase().includes(filters.from.toLowerCase())) &&
-        (!filters.to || trip.to?.toLowerCase().includes(filters.to.toLowerCase()))
+          trip.tripType
+            ?.toLowerCase()
+            .includes(filters.tripType.toLowerCase())) &&
+        (!filters.name ||
+          trip.name?.toLowerCase().includes(filters.name.toLowerCase())) &&
+        (!filters.from ||
+          trip.from?.toLowerCase().includes(filters.from.toLowerCase())) &&
+        (!filters.to ||
+          trip.to?.toLowerCase().includes(filters.to.toLowerCase()))
       );
     });
     setFilteredData(filtered);
@@ -175,7 +181,9 @@ export default function AdminPage() {
               {locations.map((loc, i) => (
                 <div
                   key={i}
-                  onMouseDown={() => setFilters((prev) => ({ ...prev, from: loc }))}
+                  onMouseDown={() =>
+                    setFilters((prev) => ({ ...prev, from: loc }))
+                  }
                   className="p-2 cursor-pointer hover:bg-indigo-100 break-words"
                 >
                   {loc}
@@ -201,7 +209,9 @@ export default function AdminPage() {
               {locations.map((loc, i) => (
                 <div
                   key={i}
-                  onMouseDown={() => setFilters((prev) => ({ ...prev, to: loc }))}
+                  onMouseDown={() =>
+                    setFilters((prev) => ({ ...prev, to: loc }))
+                  }
                   className="p-2 cursor-pointer hover:bg-indigo-100 break-words"
                 >
                   {loc}
@@ -237,7 +247,10 @@ export default function AdminPage() {
           </thead>
           <tbody>
             {filteredData.map((trip, index) => (
-              <tr key={trip._id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+              <tr
+                key={trip._id}
+                className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+              >
                 <td className="px-4 py-3 whitespace-normal break-words">
                   <button
                     onClick={() => setEditingTrip(trip)}
@@ -246,15 +259,35 @@ export default function AdminPage() {
                     Edit
                   </button>
                 </td>
-                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">{trip?.bookingId || "-"}</td>
-                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">{trip.date?.slice(0, 10) || "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.from || "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.to || "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.tripType || "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.vehicle?.type || "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.totalFare != null ? `₹ ${trip.totalFare.toFixed(2)}` : "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.mobile || "-"}</td>
-                <td className="px-4 py-3 whitespace-normal break-words">{trip.name || "-"}</td>
+                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
+                  {trip?.bookingId || "-"}
+                </td>
+                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
+                  {trip.date?.slice(0, 10) || "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.from || "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.to || "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.tripType || "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.vehicle?.type || "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.totalFare != null
+                    ? `₹ ${trip.totalFare.toFixed(2)}`
+                    : "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.mobile || "-"}
+                </td>
+                <td className="px-4 py-3 whitespace-normal break-words">
+                  {trip.name || "-"}
+                </td>
               </tr>
             ))}
             {filteredData.length === 0 && (
@@ -272,11 +305,15 @@ export default function AdminPage() {
       {editingTrip && (
         <EditTripPopUp
           trip={editingTrip}
-          vehicles = {vehicleDetails}
+          vehicles={vehicleDetails}
           onClose={() => setEditingTrip(null)}
           onUpdate={(updatedTrip) => {
-            setTripsData((prev) => prev.map((t) => (t._id === updatedTrip._id ? updatedTrip : t)));
-            setFilteredData((prev) => prev.map((t) => (t._id === updatedTrip._id ? updatedTrip : t)));
+            setTripsData((prev) =>
+              prev.map((t) => (t._id === updatedTrip._id ? updatedTrip : t))
+            );
+            setFilteredData((prev) =>
+              prev.map((t) => (t._id === updatedTrip._id ? updatedTrip : t))
+            );
           }}
         />
       )}
