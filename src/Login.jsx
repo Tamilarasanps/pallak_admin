@@ -6,6 +6,8 @@ import { toast } from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 
+import AxiosInstance from "./axiosInstance";
+
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +39,7 @@ export default function Login() {
 
       // Navigate to admin page
       setTimeout(() => {
-        navigate("/");
+        navigate("/home");
       }, 3000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed!");
