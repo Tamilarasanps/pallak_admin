@@ -12,13 +12,16 @@
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
     "axios": "^1.10.0",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.23.5",
     "lucide-react": "^0.528.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^7.7.1"
+    "react-router-dom": "^7.7.1",
+    "write-excel-file": "^2.3.10",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

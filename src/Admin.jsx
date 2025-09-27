@@ -6,11 +6,12 @@ import { getAllVehicles } from "./service/vehicles";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EditTripPopUp from "./EditTripPopUp";
-import axios from "axios";
+import axios from "axios";  
 
 export default function AdminPage() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [tripsData, setTripsData] = useState([]);
+  console.log("tripsData :", tripsData);
   const [filteredData, setFilteredData] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const { setVehicleDetails, vehicleDetails } = useGlobalContext();
@@ -18,13 +19,15 @@ export default function AdminPage() {
   const [showDrop, setShowDrop] = useState(false);
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
-    date: "",
+    startDate: "",
+    endDate: "",
     tripType: "",
     name: "",
     from: "",
     to: "",
     bookingId: "",
   });
+  console.log("filters :", filters);
   const [editingTrip, setEditingTrip] = useState(null);
 
   const locations = useMemo(() => {
@@ -41,6 +44,8 @@ export default function AdminPage() {
       try {
         const data = await fetchAllBookings();
         const response = await getAllVehicles();
+        console.log("response :", response);
+        console.log("data :", data);
         setVehicleDetails(response);
         setTripsData(data?.tripDetails || []);
         setFilteredData(data?.tripDetails || []);
@@ -61,12 +66,16 @@ export default function AdminPage() {
 
   const applyFilters = () => {
     let filtered = tripsData.filter((trip) => {
+      const tripDate = new Date(trip.date);
+      console.log("tripDatefn :", tripDate);
+      const start = filters.startDate ? new Date(filters.startDate) : null;
+      const end = filters.endDate ? new Date(filters.endDate) : null;
+
       return (
         (!filters.bookingId ||
           trip.bookingId
             ?.toLowerCase()
             .includes(filters.bookingId.toLowerCase())) &&
-        (!filters.date || trip.date?.includes(filters.date)) &&
         (!filters.tripType ||
           trip.tripType
             ?.toLowerCase()
@@ -76,14 +85,20 @@ export default function AdminPage() {
         (!filters.from ||
           trip.from?.toLowerCase().includes(filters.from.toLowerCase())) &&
         (!filters.to ||
-          trip.to?.toLowerCase().includes(filters.to.toLowerCase()))
+          trip.to?.toLowerCase().includes(filters.to.toLowerCase())) &&
+        (!start || tripDate >= start) &&
+        (!end || tripDate <= end)
       );
     });
     setFilteredData(filtered);
   };
 
   const handleFilterChange = (e) => {
-    setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleUpdateMobile = async () => {
@@ -94,8 +109,6 @@ export default function AdminPage() {
         { mobile: mobileNumber }, // request body
         { headers: { "Content-Type": "application/json" } } // headers
       );
-
-      console.log("Response:", res.data);
       alert("Mobile number updated!");
     } catch (error) {
       console.error("Error updating mobile:", error);
@@ -117,9 +130,11 @@ export default function AdminPage() {
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
             className="px-4 py-2 w-32 lg:w-48 rounded-md border border-gray-300 focus:ring-2 focus:ring-indigo-400"
-            onClick={handleUpdateMobile}
           />
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all">
+          <button
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all"
+            onClick={handleUpdateMobile}
+          >
             Update
           </button>
         </div>
@@ -148,13 +163,38 @@ export default function AdminPage() {
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
-        <input
-          type="date"
-          name="date"
-          value={filters.date}
-          onChange={handleFilterChange}
-          className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
-        />
+        <div className="relative">
+          <input
+            type="date"
+            name="startDate"
+            value={filters.startDate}
+            onChange={handleFilterChange}
+            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <label
+            htmlFor="startDate"
+            className="absolute left-3 top-0 text-gray-400"
+          >
+            Starting Date
+          </label>
+        </div>
+
+        <div className="relative">
+          <input
+            type="date"
+            name="endDate"
+            value={filters.endDate}
+            onChange={handleFilterChange}
+            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <label
+            htmlFor="endDate"
+            className="absolute left-3 top-0 text-gray-400"
+          >
+            Ending Date
+          </label>
+        </div>
+
         <select
           name="tripType"
           value={filters.tripType}
