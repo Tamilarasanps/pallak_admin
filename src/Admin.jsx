@@ -6,7 +6,7 @@ import { getAllVehicles } from "./service/vehicles";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EditTripPopUp from "./EditTripPopUp";
-import axios from "axios";  
+import axios from "axios";
 
 export default function AdminPage() {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -131,6 +131,7 @@ export default function AdminPage() {
             onChange={(e) => setMobileNumber(e.target.value)}
             className="px-4 py-2 w-32 lg:w-48 rounded-md border border-gray-300 focus:ring-2 focus:ring-indigo-400"
           />
+
           <button
             className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-all"
             onClick={handleUpdateMobile}
