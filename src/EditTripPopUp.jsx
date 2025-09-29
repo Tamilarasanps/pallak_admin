@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function EditTripPopUp({ trip, onClose, onUpdate, vehicles }) {
-  console.log("vehicles :", trip);
+  console.log("trip :", trip);
   const [form, setForm] = useState({
     date: "",
     from: "",
@@ -25,9 +25,21 @@ export default function EditTripPopUp({ trip, onClose, onUpdate, vehicles }) {
     tollCharge: "",
     permitCharges: "",
   });
-  console.log("trip :", trip);
   useEffect(() => {
     if (trip) {
+      // helper to convert 12h -> 24h
+      const convertTo24Hour = (timeStr) => {
+        if (!timeStr) return "";
+        const [time, modifier] = timeStr.split(" ");
+        let [hours, minutes] = time.split(":");
+        hours = parseInt(hours, 10);
+
+        if (modifier === "PM" && hours !== 12) hours += 12;
+        if (modifier === "AM" && hours === 12) hours = 0;
+
+        return `${String(hours).padStart(2, "0")}:${minutes}`;
+      };
+
       setForm({
         date: trip.date?.slice(0, 10) || "",
         from: trip.from || "",
@@ -39,7 +51,7 @@ export default function EditTripPopUp({ trip, onClose, onUpdate, vehicles }) {
         vehicle: trip.vehicle || { type: "", capacity: "", options: [] },
         driverAllowance: trip.driverAllowance ?? "",
         email: trip.email || "",
-        pickupTime: trip.pickupTime || "",
+        pickupTime: convertTo24Hour(trip.pickupTime),
         totalKms: trip.totalKms ?? "",
         baseFair: trip.baseFair ?? "",
         tollCharge: trip.tollCharge ?? "",
@@ -52,25 +64,38 @@ export default function EditTripPopUp({ trip, onClose, onUpdate, vehicles }) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const convertTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    let [hours, minutes] = timeStr.split(":");
+    hours = parseInt(hours, 10);
+    const modifier = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12 || 12; // convert 0 → 12, 13 → 1
+    return `${hours}:${minutes} ${modifier}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = { ...form, pickupTime: convertTo12Hour(form.pickupTime) };
+
       const res = await axios.put(
         `https://pallaku-backend.onrender.com/api/bookings/update/${trip._id}`,
-        form,
+        payload,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
 
-      onUpdate(res.data); // send updated trip back to parent
+      onUpdate(res.data);
       onClose();
     } catch (err) {
       console.error("Error updating trip:", err);
       alert("Failed to update trip");
     }
   };
+
   console.log("pl :", form.permitCharges);
   console.log("hgn :", trip.permitCharges);
   return (

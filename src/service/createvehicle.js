@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const BASE_URL = "https://pallaku-backend.onrender.com/api/vehicles";
-const BASE_URL = "http://localhost:5000/api/vehicles";
+const BASE_URL = "https://pallaku-backend.onrender.com/api/vehicles";
+// const BASE_URL = "http://localhost:5000/api/vehicles";
 
 export const createVehicle = async (formData) => {
   try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { fetchAllBookings } from "./service/booking.api";
 import { useGlobalContext } from "./context/GlobalContext";
@@ -7,11 +7,17 @@ import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EditTripPopUp from "./EditTripPopUp";
 import axios from "axios";
+import ConfirmPopup from "./ConformPopUp";
 
 export default function AdminPage() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [tripsData, setTripsData] = useState([]);
-  console.log("tripsData :", tripsData);
+  const [confirmData, setConfirmData] = useState({
+    show: false,
+    trip: null,
+    tripId: null,
+    newStatus: "",
+  });
   const [filteredData, setFilteredData] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const { setVehicleDetails, vehicleDetails } = useGlobalContext();
@@ -26,8 +32,9 @@ export default function AdminPage() {
     from: "",
     to: "",
     bookingId: "",
+    status: "pending", // new field
   });
-  console.log("filters :", filters);
+
   const [editingTrip, setEditingTrip] = useState(null);
 
   const locations = useMemo(() => {
@@ -39,23 +46,25 @@ export default function AdminPage() {
     return allLocations.sort();
   }, [tripsData]);
 
+  const calTotalEarings = useCallback((data) => {
+    const total = data?.tripDetails?.reduce(
+      (sum, trip) =>
+        trip.status === "confirm" ? sum + (trip.totalFare || 0) : sum,
+      0
+    );
+    setTotalEarnings(total);
+  });
+
   useEffect(() => {
     const getData = async () => {
       try {
         const data = await fetchAllBookings();
         const response = await getAllVehicles();
-        console.log("response :", response);
-        console.log("data :", data);
         setVehicleDetails(response);
         setTripsData(data?.tripDetails || []);
         setFilteredData(data?.tripDetails || []);
         setMobileNumber(data?.adminPhone || "");
-
-        const total = data?.tripDetails?.reduce(
-          (sum, trip) => sum + (trip.totalFare || 0),
-          0
-        );
-        setTotalEarnings(total);
+        calTotalEarings(data);
       } catch (error) {
         if (error?.status === 401) navigate("/login");
         console.error("Failed to fetch trips:", error);
@@ -67,7 +76,6 @@ export default function AdminPage() {
   const applyFilters = () => {
     let filtered = tripsData.filter((trip) => {
       const tripDate = new Date(trip.date);
-      console.log("tripDatefn :", tripDate);
       const start = filters.startDate ? new Date(filters.startDate) : null;
       const end = filters.endDate ? new Date(filters.endDate) : null;
 
@@ -87,7 +95,8 @@ export default function AdminPage() {
         (!filters.to ||
           trip.to?.toLowerCase().includes(filters.to.toLowerCase())) &&
         (!start || tripDate >= start) &&
-        (!end || tripDate <= end)
+        (!end || tripDate <= end) &&
+        (!filters.status || trip.status === filters.status) // filter by status
       );
     });
     setFilteredData(filtered);
@@ -116,8 +125,59 @@ export default function AdminPage() {
     }
   };
 
+  const handleStatusUpdate = async (tripId, newStatus) => {
+    try {
+      const form = confirmData.trip;
+      const payload = { ...form, status: newStatus };
+
+      const res = await axios.put(
+        `https://pallaku-backend.onrender.com/api/bookings/update/${tripId}`,
+        // `http://localhost:5000/api/bookings/update/${tripId}`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (res.status === 200) {
+        const updatedTrip = res.data; // backend returns updated booking
+
+        // Update frontend state in real time
+        setTripsData((prev) => {
+          const newTrips = prev.map((t) =>
+            t._id === updatedTrip._id ? updatedTrip : t
+          );
+          calTotalEarings({ tripDetails: newTrips }); // recalc earnings
+          return newTrips;
+        });
+
+        setFilteredData((prev) =>
+          prev.map((t) => (t._id === updatedTrip._id ? updatedTrip : t))
+        );
+
+        alert("Status updated successfully ✅");
+      }
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update status ❌");
+    }
+  };
+
   return (
     <div className="w-full h-full bg-indigo-50 space-y-6 py-4 p-6 md:p-12">
+      {/* Confirmation Popup */}
+      <ConfirmPopup
+        show={confirmData.show}
+        message={`Change status to "${confirmData.newStatus}"?`}
+        onCancel={() =>
+          setConfirmData({ show: false, tripId: null, newStatus: "" })
+        }
+        onConfirm={() => {
+          handleStatusUpdate(confirmData.tripId, confirmData.newStatus);
+          setConfirmData({ show: false, tripId: null, newStatus: "" });
+        }}
+      />
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <h1 className="lg:text-3xl font-bold text-indigo-700">
@@ -206,6 +266,19 @@ export default function AdminPage() {
           <option value="onwaytrip">One Way Trip</option>
           <option value="roundtrip">Round Trip</option>
         </select>
+
+        <select
+          name="status"
+          value={filters.status}
+          onChange={handleFilterChange}
+          className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+        >
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="confirm">Confirm</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+
         <input
           type="text"
           name="bookingId"
@@ -294,6 +367,7 @@ export default function AdminPage() {
           <thead className="bg-indigo-600 text-white">
             <tr>
               <th className="px-4 py-3 text-left w-24">Edit</th>
+              <th className="px-4 py-3 text-left w-32">Status</th>
               <th className="px-4 py-3 text-left w-28">Booking Id</th>
               <th className="px-4 py-3 text-left w-28">Date</th>
               <th className="px-4 py-3 text-left w-40">Pickup</th>
@@ -322,6 +396,25 @@ export default function AdminPage() {
                       Edit
                     </button>
                   </td>
+                  <td className="px-4 py-3 whitespace-normal break-words">
+                    <select
+                      value={trip.status || "pending"}
+                      onChange={(e) => {
+                        setConfirmData({
+                          show: true,
+                          tripId: trip._id,
+                          trip: trip,
+                          newStatus: e.target.value,
+                        });
+                      }}
+                      className="p-1 border rounded-md bg-white focus:ring-2 focus:ring-indigo-400"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirm">Confirm</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </td>
+
                   <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">
                     {trip?.bookingId || "-"}
                   </td>
