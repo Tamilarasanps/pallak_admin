@@ -3,7 +3,6 @@ import axios from "axios";
 
 export const fetchAllBookings = async () => {
   const token = localStorage.getItem("token");
-  // console.log('token :',token)
   try {
     // const response = await axios.get("http://localhost:5000/api/bookings", {
     const response = await axios.get(
@@ -18,7 +17,7 @@ export const fetchAllBookings = async () => {
     );
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch bookings:", error.message);
+    console.error("Failed to fetch bookings:", error);
     throw error; // Rethrow for further handling in the component
   }
 };

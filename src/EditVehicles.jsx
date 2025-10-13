@@ -117,6 +117,7 @@ export default function EditVehicles() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true, // ← include cookies
         }
       );
 
@@ -143,8 +144,12 @@ export default function EditVehicles() {
       //         `http://localhost:5000/api/vehicles/delete-vehicle/${id}`
       // );
       await axios.delete(
-        `https://pallaku-backend.onrender.com/api/vehicles/delete-vehicle/${id}`
+        `https://pallaku-backend.onrender.com/api/vehicles/delete-vehicle/${id}`,
+        {
+          withCredentials: true, // ← include cookies
+        }
       );
+
       setVehicleDetails((prev) => prev.filter((v) => v._id !== id));
     } catch (err) {
       console.error(err);

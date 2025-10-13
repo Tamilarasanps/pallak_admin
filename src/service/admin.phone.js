@@ -8,6 +8,9 @@ export const updateAdminMobile = async (mobileNumber) => {
       "https://pallaku-backend.onrender.com/api/admin/mobile",
       {
         mobile: mobileNumber,
+      },
+      {
+        withCredentials: true,
       }
     );
     // console.log(response);

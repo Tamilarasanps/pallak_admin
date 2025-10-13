@@ -7,6 +7,7 @@ export const createVehicle = async (formData) => {
   try {
     const response = await axios.post(`${BASE_URL}/create`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true, // ← include cookies
     });
     return response;
   } catch (error) {

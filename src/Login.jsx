@@ -29,8 +29,6 @@ export default function Login() {
         }
       );
       localStorage.setItem("token", response.data.token);
-      console.log(response);
-      console.log(response.data.token);
       // console.log(response)
       toast.success(response.data.message || "Login successful!");
       // console.log(response.data);

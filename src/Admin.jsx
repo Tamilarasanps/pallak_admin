@@ -116,7 +116,10 @@ export default function AdminPage() {
         "https://pallaku-backend.onrender.com/api/admin/mobile",
         // "http://localhost:5000/api/admin/mobile",
         { mobile: mobileNumber }, // request body
-        { headers: { "Content-Type": "application/json" } } // headers
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // ← include cookies
+        } // headers
       );
       alert("Mobile number updated!");
     } catch (error) {
