@@ -32,9 +32,12 @@ export default function AdminPage() {
     from: "",
     to: "",
     bookingId: "",
-    status: "pending", // new field
+    status: "", // new field
   });
+  const [filterError, setFilterError] = useState("");
+  const [filterTotalAmount, setFilterTotalAmount] = useState(totalEarnings);
 
+  console.log("filteredData :", filters);
   const [editingTrip, setEditingTrip] = useState(null);
 
   const locations = useMemo(() => {
@@ -73,11 +76,43 @@ export default function AdminPage() {
     getData();
   }, []);
 
+  const clearAllFilters = () => {
+    setFilters({
+      startDate: "",
+      endDate: "",
+      tripType: "",
+      name: "",
+      from: "",
+      to: "",
+      bookingId: "",
+      status: "", // new field
+    });
+    setFilterTotalAmount(0); // <---- your total amount state
+
+    setFilterError("");
+    setFilteredData(tripsData); // Restores full table
+  };
+  const getTripTotal = (trip) => {
+    return (
+      Number(trip.totalFare || 0)
+    );
+  };
+
   const applyFilters = () => {
+    setFilterError("");
+
+    const { startDate, endDate } = filters;
+
+    // --- DATE VALIDATION ---
+    if ((startDate && !endDate) || (!startDate && endDate)) {
+      setFilterError("Please select BOTH start date and end date.");
+      return;
+    }
+
     let filtered = tripsData.filter((trip) => {
-      const tripDate = new Date(trip.date);
-      const start = filters.startDate ? new Date(filters.startDate) : null;
-      const end = filters.endDate ? new Date(filters.endDate) : null;
+      const tripDate = new Date(trip.date).setHours(0, 0, 0, 0);
+      const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+      const end = endDate ? new Date(endDate).setHours(0, 0, 0, 0) : null;
 
       return (
         (!filters.bookingId ||
@@ -96,25 +131,47 @@ export default function AdminPage() {
           trip.to?.toLowerCase().includes(filters.to.toLowerCase())) &&
         (!start || tripDate >= start) &&
         (!end || tripDate <= end) &&
-        (!filters.status || trip.status === filters.status) // filter by status
+        (!filters.status || trip.status === filters.status)
       );
     });
+
+    // --- CALCULATE TOTAL AMOUNT OF FILTERED TRIPS ---
+    const totalAmount = filtered.reduce((sum, trip) => {
+      return sum + getTripTotal(trip);
+    }, 0);
+
+    // Save both filtered data and total amount
     setFilteredData(filtered);
+    setFilterTotalAmount(totalAmount); // <---- your total amount state
   };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
+
     setFilters((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // Remove error automatically
+    setFilterError("");
+
+    // If user selects endDate without startDate → warn
+    if (name === "endDate" && value && !filters.startDate) {
+      setFilterError("Please select a starting date first.");
+    }
+
+    // If user selects startDate without endDate → warn
+    if (name === "startDate" && value && !filters.endDate) {
+      setFilterError("Please select an ending date.");
+    }
   };
 
   const handleUpdateMobile = async () => {
     try {
       const res = await axios.put(
-        "https://pallaku-backend.onrender.com/api/admin/mobile",
-        // "http://localhost:5000/api/admin/mobile",
+        // "https://pallaku-backend.onrender.com/api/admin/mobile",
+        "http://localhost:5000/api/admin/mobile",
         { mobile: mobileNumber }, // request body
         {
           headers: { "Content-Type": "application/json" },
@@ -134,8 +191,8 @@ export default function AdminPage() {
       const payload = { ...form, status: newStatus };
 
       const res = await axios.put(
-        `https://pallaku-backend.onrender.com/api/bookings/update/${tripId}`,
-        // `http://localhost:5000/api/bookings/update/${tripId}`,
+        // `https://pallaku-backend.onrender.com/api/bookings/update/${tripId}`,
+        `http://localhost:5000/api/bookings/update/${tripId}`,
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -223,6 +280,14 @@ export default function AdminPage() {
             ₹{totalEarnings.toFixed(2)}
           </p>
         </div>
+        <div className="bg-white border-l-4 border-green-500 p-6 rounded-xl shadow text-center">
+          <p className="text-lg font-semibold text-gray-600">
+            Filtered Earnings
+          </p>
+          <p className="text-3xl font-bold text-green-700 mt-2">
+            ₹{filterTotalAmount.toFixed(2)}
+          </p>
+        </div>
       </motion.div>
 
       {/* Filters */}
@@ -266,7 +331,7 @@ export default function AdminPage() {
           className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
         >
           <option value="">All Trips</option>
-          <option value="onwaytrip">One Way Trip</option>
+          <option value="onewaytrip">One Way Trip</option>
           <option value="roundtrip">Round Trip</option>
         </select>
 
@@ -362,7 +427,17 @@ export default function AdminPage() {
         >
           <Search size={18} /> Filter
         </button>
+        <button
+          onClick={clearAllFilters}
+          className="px-4 py-2 bg-red-500 text-white rounded"
+        >
+          Clear All Filters
+        </button>
       </div>
+
+      {filterError && (
+        <p className="text-red-600 font-semibold mt-2">{filterError}</p>
+      )}
 
       {/* Travel details */}
       <div className="relative w-full overflow-y-scroll h-96 bg-white rounded-md">
